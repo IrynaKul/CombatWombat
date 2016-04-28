@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta content="yes" name="apple-mobile-web-app-capable" />
+  <meta name="viewport" content="initial-scale=1">
+  <style type="text/css">
+  html, body{
+    width: 100%;
+    height: 100%;
+  }
+  #googleMap{
+    position: relative;
+    z-index: 1;
+  }
+
+  #holder{
+    position: absolute;
+    float:right;
+    top: 10%;
+    right: 0px;
+    z-index: 2;
+  }
+
+  .btn{ 
+    float: right;
+  }
+  </style>
+  <script src="http://maps.googleapis.com/maps/api/js"></script>
+  <script>
+      var map;
+      var marker;
+      function ZoomControl(map) {
+
+       google.maps.event.addDomListener(zoomOut, 'click', function() {
+         var currentZoomLevel = map.getZoom();
+         map.setZoom(currentZoomLevel - 1);    
+        });
+
+         google.maps.event.addDomListener(zoomIn, 'click', function() {
+         var currentZoomLevel = map.getZoom();
+         map.setZoom(currentZoomLevel + 1);
+        });
+
+      }
+
+      function PositionControl(map){
+
+
+      	google.maps.event.addDomListener(left, 'click', function() {
+         		map.panBy(-100,0);
+        	});
+
+      	google.maps.event.addDomListener(right, 'click', function() {
+      		map.panBy(100,0);  
+        	});
+
+      	google.maps.event.addDomListener(up, 'click', function() {
+      		map.panBy(0,-100);    
+        	});
+
+      	google.maps.event.addDomListener(down, 'click', function() {
+         		map.panBy(0,100);
+        	});
+      }
+
+      function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+      }
+
+      function initialize() {
+        var mapProp = {
+          // center:new google.maps.LatLng(59.347454,18.073773),
+          center:new google.maps.LatLng(59.347454,18.073773),
+          zoom:15,
+          mapTypeId:google.maps.MapTypeId.HYBRID,
+          tilt: 45,
+          disableDefaultUI:true
+        };
+        map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+        
+        ZoomControl(map);
+        PositionControl(map)
+
+        marker = new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: {lat: 59.347454, lng: 18.073773}
+        });
+        marker.addListener('click', toggleBounce);
+
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+  </script>
+</head>
+
+<body>
+<div id="googleMap" style="width:100%;height:100%;"></div>
+<div id="holder">
+  <button id="zoomIn" class="btn">Zoom In</button>
+  <br/>
+  <br/>
+  <button id="zoomOut" class="btn">Zoom Out</button>
+  <br/>
+  <br/>
+  <button id="left" class="btn">Left</button>
+  <br/>
+  <br/>
+  <button id="right" class="btn">Right</button>
+  <br/>
+  <br/>
+  <button id="up" class="btn">Up</button>
+  <br/>
+  <br/>
+  <button id="down" class="btn">Down</button>
+</div>
+</body>
+
+</html>
