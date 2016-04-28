@@ -18,7 +18,7 @@
   <style type="text/css">
   html, body{
     background: #DDD;
-  	-webkit-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
     width: 100%;
     height: 100%;
     margin-top: 0px;
@@ -30,10 +30,10 @@
   }
 
   #zoom{
-  	position: absolute;
-  	z-index: 2;
-	top: 80%;
-	right: 2%;
+    position: absolute;
+    z-index: 2;
+  top: 80%;
+  right: 2%;
   }
 
   #holder{
@@ -46,8 +46,8 @@
   }
 
   .btn{
-  	position: relative;
-  	display: inline-block;
+    position: relative;
+    display: inline-block;
     background-color: lightblue;
     border-radius: 6px;
     width: 60px;
@@ -75,30 +75,80 @@
       }
 
       function HogiFav(map) {
+        var hogi = {
+          url:'https://cdn0.iconfinder.com/data/icons/party-icons-rounded/110/Party-Hat-512.png',
+          scaledSize: new google.maps.Size(50, 50), // scaled size
+          origin: new google.maps.Point(0,0), // origin
+          anchor: new google.maps.Point(0, 0) // anchor
+        };
+
+        var markerH =new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: {lat: 59.327131, lng: 18.249213},
+          icon: hogi
+        });
+        markerH.addListener('click', toggleBounce);
         google.maps.event.addDomListener(hog, 'click', function() {
-          cosole.log("gggggg");
-            map.setCenter(new google.maps.LatLng(59.328384, 18.252171));
+          markerH.setPosition( new google.maps.LatLng(59.327131, 18.249213) );
+          map.panTo( new google.maps.LatLng(59.327131, 18.249213) );
           });
+        markerH.info = new google.maps.InfoWindow({
+          content: '<b>Marcus Hogler firade sina 20 bast här och hade det super kul</b> '
+        });
+        google.maps.event.addListener(markerH, 'click', function() {
+          markerH.info.open(map, markerH);
+        });
+      }
+
+      function IrynaKul(map) {
+        var iryni = {
+          url:'http://www.free-icons-download.net/images/home-home-icon-80046.png',
+          scaledSize: new google.maps.Size(50, 50), // scaled size
+          origin: new google.maps.Point(0,0), // origin
+          anchor: new google.maps.Point(0, 0) // anchor
+        };
+
+        var markerI =new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: {lat: 48.607182, lng: 22.266046},
+          icon: iryni
+
+        });
+        markerI.addListener('click', toggleBounce);
+        
+        google.maps.event.addDomListener(kul, 'click', function() {
+          markerI.setPosition( new google.maps.LatLng(48.607182, 22.266046) );
+          map.panTo( new google.maps.LatLng(48.607182, 22.266046) );
+          });
+        markerI.info = new google.maps.InfoWindow({
+          content: '<b>Irynas hem i Ukraina. Sweet sweet home <3</b> '
+        });
+        google.maps.event.addListener(markerI, 'click', function() {
+          markerI.info.open(map, markerI);
+        });
       }
 
       function PositionControl(map){
 
+        google.maps.event.addDomListener(left, 'click', function() {
+            map.panBy(-100,0);
+          });
 
-      	google.maps.event.addDomListener(left, 'click', function() {
-         		map.panBy(-100,0);
-        	});
+        google.maps.event.addDomListener(right, 'click', function() {
+          map.panBy(100,0);  
+          });
 
-      	google.maps.event.addDomListener(right, 'click', function() {
-      		map.panBy(100,0);  
-        	});
+        google.maps.event.addDomListener(up, 'click', function() {
+          map.panBy(0,-100);    
+          });
 
-      	google.maps.event.addDomListener(up, 'click', function() {
-      		map.panBy(0,-100);    
-        	});
-
-      	google.maps.event.addDomListener(down, 'click', function() {
-         		map.panBy(0,100);
-        	});
+        google.maps.event.addDomListener(down, 'click', function() {
+            map.panBy(0,100);
+          });
       }
 
       function toggleBounce() {
@@ -111,9 +161,7 @@
 
       function initialize() {
         var mapProp = {
-          // center:new google.maps.LatLng(59.347454,18.073773),
           center:new google.maps.LatLng(59.347454,18.073773),
-          // 59.328384, 18.252171 (OC)
           zoom:15,
           mapTypeId:google.maps.MapTypeId.HYBRID,
           tilt: 45,
@@ -123,8 +171,6 @@
         
         ZoomControl(map);
         PositionControl(map);
-        HogiFav(map);
-
         marker = new google.maps.Marker({
           map: map,
           draggable: true,
@@ -132,6 +178,8 @@
           position: {lat: 59.347454, lng: 18.073773}
         });
         marker.addListener('click', toggleBounce);
+        HogiFav(map);
+        IrynaKul(map);
 
       }
 
@@ -141,7 +189,7 @@
 </head>
 
 <body>
-<div id="googleMap" style="width:100%;height:100%;"></div>
+<div id="googleMap" style="width:100%;height:97%;"></div>
 <div id="zoom">
   <button id="zoomIn" class="btn">+</button>
   <br/>
@@ -156,7 +204,10 @@
   <br/>
   <button id="down" style="top:30px; right:-10px;" class="btn">Down</button>
 </div>
+<div>
 <input id="hog" type="button" value="Hogi's festlokal"></input>
+<input id="kul" type="button" value="Iryna's UKR place"></input>
+</div>
 </body>
 
 </html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="angular-youtube-embed.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="https://rawgithub.com/gsklee/ngStorage/master/ngStorage.js"></script> <!-- Local Storage´-->
+<!-- <script data-require="angular.js@1.3.11" data-semver="1.3.11" src="https://code.angularjs.org/1.3.11/angular.js"></script>
+<script src="angular-cookies.min.js"></script>
+<script src="angularLocalStorage.js"></script> -->
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="initial-scale=1" name="viewport" >
+<meta content="Combat Wombat" name="apple-mobile-web-app-title" >
+<link href="http://www.iconsdb.com/icons/preview/orange/cat-xxl.png" sizes="144x144" rel="apple-touch-icon-precomposed">
+
+</head>
+<!-- HOOGLER -->
+<style type="text/css">
+    body {background-image: url("https://s-media-cache-ak0.pinimg.com/236x/83/68/9a/83689a4464c5d7af6f007738fd97bd6d.jpg");}
+    .button2 {
+    background-color: #FFE5D6;
+    border: #4CAF50;
+    color: black;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+	}
+</style>
+<!--style type="text/css">
+    body {background-color:lightgrey;}
+    .rating-box > div {
+        background-color: darkgreen;
+        width: 20px;
+        height: 20px;
+        margin: 0.5px;
+        display: inline-block;
+    }
+    .rating-box > div:hover {background-color: blue;}
+</style-->
+
+<body ng-app="myApp" ng-controller="catCtrl">
+<center>
+    <h2>My favourite cat videos</h2>
+</center>
+<div>
+    <button class="button2" ng-click="next();update()" style="float: right; border: 4px solid #008CBA;">Click to next video</button>
+    <button class="button2" ng-click="previous();update()" style="float: left; border: 4px solid #008CBA;">Click to previous video</button>
+</div>
+<br/>
+<!-- <div style="background-color: #FFE5D6;">{{currentVideo.title}}</div> -->
+<youtube-video video-id="theBestVideo" style="width: 100%; height: 50%;"></youtube-video>
+<br/>
+<div>
+    <!-- STAR RATING -->
+    <!-- <div style="background-color: white; width: 140px;">
+        <span class="label label-primary">Star Rating:     {{starRating}}</span>
+    </div> -->
+    <!-- <div star-rating rating="starRating" id="rating" ng-click="click3(starRating)"></div> -->
+    <div id="rating" ng-init="rating()" style="display: inline-block; margin: 0px; padding: 0px; cursor:pointer; float: right;"></div>
+</div>
+<div>
+    <button id="showMoreInfo" class="button2" style="border: 4px solid #008CBA;">More Info</button>
+    <div id="moreInfo" style="background-color: #FFE5D6; display:none;">
+        <h2>Current Video</h2>
+        Url: {{currentVideo.catUrl}}
+        <div ng-show="currentVideo.title != null">Title: {{currentVideo.title}}</div>
+        <div ng-show="currentVideo.category != null">CATegory: {{currentVideo.category}}</div>
+        <div ng-show="currentVideo.comment != null">Comment: {{currentVideo.comment}}</div>
+        <div>
+            <div id="options">
+                <button class="button2" id="changeTitle" style="border: 4px solid #4CAF50;">Change title</button>
+                    <form class="changeTitle" ng-submit="submit('title')" style="display: none;">
+                        <input type="text" ng-model="videoTitle" size="40" placeholder="Add New or Change a Title"/>
+                        <input class="submit" type="submit" value="Submit"/>
+                    </form>
+                <button class="button2" id="changeCategory" style="border: 4px solid #4CAF50;">Change Category</button>
+                    <form class="changeCategory" ng-submit="submit('category')" style="display: none;">
+                        <input type="text" ng-model="videoCategory" size="40" placeholder="Add New or Change a Category"/>
+                        <input class="submit" type="submit" value="Submit"/>
+                    </form>
+                <button class="button2" id="AddComment" style="border: 4px solid #4CAF50;">Add a comment</button>
+                    <form class='comments' ng-submit="submit('comment')" style="display: none;">
+                        <textarea ng-model='text' placeholder="Comment on video" style="width: 250px;"></textarea>
+                        <input class="submit" type='submit' value='Submit'>   
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+<form ng-submit="catAdd()">
+    <input id="url" type="text" ng-model="catInput" size="40" placeholder="Add New url-id">
+    <input type="submit" value="Add New">
+</form>
+<br/>
+<div>
+	<button class="button2" id="showmenu" style="border: 4px solid #4CAF50;">Show video list</button>
+		<div class="menu" style="display: none;">
+			<div ng-repeat="x in catList">
+    			<input type="checkbox" ng-model="x.done" />{{x.catUrl}}</span>
+    		</div>
+    	<p><button class="button2" ng-click="remove()" style="border: 4px solid #F44336;">Remove marked video</button></p>
+	</div>
+</div>
+<br/>
+<!-- <div class="rating-box">
+    <div id="1" onClick="setRating(1)"></div>
+    <div id="2" onClick="setRating(2)"></div>
+    <div id="3" onClick="setRating(3)"></div>
+    <div id="4" onClick="setRating(4)"></div>
+    <div id="5" onClick="setRating(5)"></div>
+</div> -->
+
+
+<!-- You can use 'youtube-video' as an element or attribute. -->
+
+
+
+
+
+<script>
+//
+//var $scope.catList=["fV6O722O_ew", "PHAc3_MEjgQ", "cbP2N1BQdYc"];
+// var app = angular.module('myApp', ['youtube-embed','ngCookies','angularLocalStorage']); 
+// app.controller('catCtrl', function($scope,storage) 
+//     {
+
+    // storage.bind($scope, 'catList', {defaultValue:[{catUrl:"fV6O722O_ew", done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"PHAc3_MEjgQ",done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"cbP2N1BQdYc",done:false,rating:0,title:null,category:null,comment:null}]});
+  	//show hidden catvideos
+// var app = angular.module('myApp', ['youtube-embed']); 
+// app.controller('catCtrl', function($scope) 
+//     {
+var app = angular.module('myApp', ['youtube-embed', 'ngStorage']);
+app.controller('catCtrl', function($scope, $localStorage)
+
+    {
+
+
+    var $storage = $localStorage.$default({
+        catList:[]
+    });
+
+    if($storage.catList.length>0){
+        console.log("lalala",$storage.catList);
+        $scope.catList=$storage.catList;
+    }
+    else{
+        $scope.catList = [{catUrl:"fV6O722O_ew", done:false,rating:0,title:null,category:null,comment:null},
+                        {catUrl:"PHAc3_MEjgQ",done:false,rating:0,title:null,category:null,comment:null},
+                        {catUrl:"cbP2N1BQdYc",done:false,rating:0,title:null,category:null,comment:null}];
+        $storage.catList=$scope.catList;
+    }
+    $("#showMoreInfo").click(function() {
+                $('#moreInfo').slideToggle("fast");
+        });
+  	$('#showmenu').click(function() {
+                $('.menu').slideToggle("fast");
+        });
+  	$('#AddComment').click(function() {
+                $('.comments').slideToggle("fast");
+        });
+  	$('#changeTitle').click(function() {
+                $('.changeTitle').slideToggle("fast");
+        });
+  	$('#changeCategory').click(function() {
+                $('.changeCategory').slideToggle("fast");
+        });
+  	$('.submit').click(function(){
+  		$(this).parent().slideUp();
+  	})
+
+    // $cookieStore.put('catList',[{catUrl:"fV6O722O_ew", done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"PHAc3_MEjgQ",done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"cbP2N1BQdYc",done:false,rating:0,title:null,category:null,comment:null}]);
+    // $scope.catList = [{catUrl:"fV6O722O_ew", done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"PHAc3_MEjgQ",done:false,rating:0,title:null,category:null,comment:null},
+    //                 {catUrl:"cbP2N1BQdYc",done:false,rating:0,title:null,category:null,comment:null}];
+    // $scope.catList=$cookieStore.get('catList');
+    $scope.catAdd = function() 
+        {
+        $scope.catList.push({catUrl:$scope.catInput, done:false,rating:0,title:null,category:null,comment:null});
+        //$scope.catList.push($scope.catInput);
+        $scope.catInput = "";
+        console.log("array ",$scope.catList,$scope.catList);
+        console.log($scope.catList.length);
+        $storage.catList=$scope.catList;
+        //showTime();
+        };
+
+    $scope.remove = function() 
+        {
+        var oldList = $scope.catList;
+        $scope.catList = [];
+        angular.forEach(oldList, function(x) 
+            {
+            if (!x.done) $scope.catList.push(x);
+            });
+        $storage.catList=$scope.catList;
+        $scope.next();
+        };
+    findIndex=function(searchTerm){
+        for(var i = 0; i < $scope.catList.length; i++) {
+            if ($scope.catList[i].catUrl == searchTerm) {
+                $scope.currentVid = i;
+                break;
+            }
+        }
+        //console.log("i findIndex ",$scope.currentVid);
+    }
+
+    if($scope.catList.length!=0){
+        $scope.currentVid=0;
+        $scope.theBestVideo= $scope.catList[$scope.currentVid].catUrl;
+        $scope.starRating = $scope.catList[$scope.currentVid].rating;
+    }
+    $scope.next=function(){
+        console.log("currentVid ",$scope.currentVid);
+        if(typeof $scope.catList[$scope.currentVid+1]== "undefined"){
+            $scope.currentVid=0;
+            $scope.starRating = $scope.catList[$scope.currentVid].rating;
+            $scope.theBestVideo= $scope.catList[$scope.currentVid].catUrl;
+        }
+        else{
+            $scope.currentVid++;
+            $scope.starRating = $scope.catList[$scope.currentVid].rating;
+            $scope.theBestVideo= $scope.catList[$scope.currentVid].catUrl;
+            findIndex($scope.theBestVideo);
+        }
+        $scope.rating();
+        
+        
+    }
+    $scope.previous=function(){
+        $scope.starRating = $scope.catList[$scope.currentVid].rating;
+        if(typeof $scope.catList[$scope.currentVid-1]=="undefined"){
+            $scope.currentVid=$scope.catList.length-1;
+            $scope.starRating = $scope.catList[$scope.currentVid].rating;
+            $scope.theBestVideo= $scope.catList[$scope.currentVid].catUrl;
+        }
+        else{
+            $scope.currentVid--;
+            $scope.theBestVideo= $scope.catList[$scope.currentVid].catUrl;
+            $scope.starRating = $scope.catList[$scope.currentVid].rating;
+            findIndex($scope.theBestVideo);
+        }
+        $scope.rating();
+    }
+
+    click3 = function (param) {
+            for (var i = param; i <= 5; i++) {
+                document.getElementById(i).setAttribute("src","http://www.codeproject.com/script/ratings/images/star-empty-lg.png");
+            }
+            for (var i = 1; i <= param; i++) {
+                document.getElementById(i).setAttribute("src","http://www.codeproject.com/script/ratings/images/star-fill-lg.png");
+            }
+            $scope.starRating=param;
+            $scope.catList[$scope.currentVid].rating=param;
+            $storage.catList=$scope.catList;
+        };
+
+    $scope.submit=function(type){
+        if(type=="title"){
+            $scope.catList[$scope.currentVid].title=$scope.videoTitle;
+        }
+        else if(type=="category"){
+            $scope.catList[$scope.currentVid].category=$scope.videoCategory;
+        }
+        else if(type=="comment"){
+            $scope.catList[$scope.currentVid].comment=$scope.text;
+        } 
+        $storage.catList=$scope.catList;
+
+    }
+    $scope.currentVideo=$scope.catList[$scope.currentVid];
+
+    $scope.rating=function(){
+        document.getElementById("rating").innerHTML="";
+        $scope.currentVideo=$scope.catList[$scope.currentVid];
+    	var rating=$scope.currentVideo.rating;
+    	if(rating==0){
+    		for(var i=0;i<5;i++){
+                var num=i+1;
+                document.getElementById("rating").innerHTML+="<img src='http://www.codeproject.com/script/ratings/images/star-empty-lg.png' id="+num+" onclick='click3("+num+")'></img>";
+            }
+    	}
+        else if(rating<=5){
+            var rest=5-rating;
+            for(var i=1;i<=rating;i++){
+                var num=i;
+                document.getElementById("rating").innerHTML+="<img src='http://www.codeproject.com/script/ratings/images/star-fill-lg.png' id="+num+" onclick='click3("+num+")'></img>";
+            }
+            for(var i=rating+1;i<=5;i++){
+                document.getElementById("rating").innerHTML+="<img src='http://www.codeproject.com/script/ratings/images/star-empty-lg.png' id="+i+" onclick='click3("+i+")'></img>";
+            }
+
+        }
+    	
+    }
+});
+</script>
+</body>
+</html>
